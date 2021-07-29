@@ -154,6 +154,7 @@ function checkFoodIsEaten() {
 }
 
 function showScore() {
+    document.getElementById("speed").innerHTML = " Press Space bar to change Speed!";
     document.getElementById("score").innerHTML = "Score: " + score;
 }
 
