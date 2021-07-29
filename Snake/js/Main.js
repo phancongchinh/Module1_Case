@@ -6,6 +6,7 @@ const snake_col = 'lightblue';
 const snake_border = 'blue';
 const snake_init_length = 5;
 let bite = new Audio("sound/swallow.mp3")
+let gameover = new Audio("sound/gameover.mp3")
 let dx = 20;
 let dy = 0;
 let score = 0;
@@ -52,6 +53,7 @@ main();
 function main() {
     function onEachMove() {
         if (checkGameOver()) {
+            gameover.play();
             alert("Game Over!")
             return;
         }
@@ -160,9 +162,9 @@ function showScore() {
 
 function checkGameOver() {
     let hitLeftWall = snake[0].x < 0;
-    let hitRightWall = snake[0].x > canvas.clientWidth;
+    let hitRightWall = snake[0].x >= canvas.clientWidth;
     let hitTopWall = snake[0].y < 0;
-    let hitBottomWall = snake[0].y > canvas.clientHeight;
+    let hitBottomWall = snake[0].y >= canvas.clientHeight;
     let hitTail;
     for (let i = 4; i < snake.length; i++) {
         if (snake[0].x === snake[i].x && snake[0].y === snake[i].y) {
