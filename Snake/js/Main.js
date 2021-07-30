@@ -11,6 +11,9 @@ const snake_init_length = 5;
 let bite = new Audio("sound/swallow.mp3")
 let gameOver = new Audio("sound/gameover.mp3")
 
+let foodImg = new Image();
+foodImg.src = "../Snake/img/food.png";
+
 let reversing = false;
 
 let dx = cellSize;
@@ -197,17 +200,16 @@ function checkFoodIsEaten() {
     if (foodIsEaten) {
         bite.play();
         initFood();
-        score += 10;
+        score += 1;
     }
 }
 
 function showInfo() {
-    document.getElementById("speed").innerHTML = " Press Space bar to change Speed!";
-    document.getElementById("score").innerHTML = "Score: " + score;
+    document.getElementById("score").innerHTML = score;
     if (score >= highScore) {
         highScore = score;
     }
-    document.getElementById("highscore").innerHTML = "Best: " + highScore;
+    document.getElementById("highscore").innerHTML = highScore;
 }
 
 function checkGameOver() {
