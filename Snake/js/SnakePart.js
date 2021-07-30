@@ -7,8 +7,16 @@ class SnakePart {
     }
     drawSnakePart () {
         ctx.fillStyle = snake_col;
-        ctx.strokestyle = snake_border;
-        ctx.fillRect(this.x, this.y, 20, 20);
-        ctx.strokeRect(this.x, this.y, 20, 20);
+        // if (dx!==0) {
+        //     ctx.fillRect(this.x, this.y+5, cellSize, cellSize-10);
+        // } else {
+        //     ctx.fillRect(this.x+5, this.y, cellSize -10, cellSize);
+        // }
+        // ctx.strokestyle = snake_border;
+        ctx.fillRect(this.x, this.y, cellSize, cellSize);
+        // ctx.strokeRect(this.x, this.y, cellSize, cellSize);
+    }
+    clearSnakePart () {
+        ctx.clearRect(this.x, this.y, cellSize, cellSize);
     }
 }

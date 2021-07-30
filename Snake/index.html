@@ -6,14 +6,22 @@
 </head>
 
 <body>
-
-
 <div>
-    <p id="speed"></p>
-    <p id="score"></p>
+    <table>
+        <tr>
+            <td class="tableCell" style="text-align: center; width: 200px"><p id="score"></p></td>
+            <td class="tableCell" style="text-align: center; width: 200px"><p id="highscore"></p></td>
+            <td class="tableCell" style="text-align: right; width: 590px"><p id="speed"></p></td>
+        </tr>
+    </table>
+
+<!--    <canvas id ="bigCanvas"  width="1050"  height="750">-->
+        <canvas id="canvas" width="1000"  height="700"></canvas>
+<!--    </canvas>-->
+
 </div>
 
-<canvas id="canvas" width="1000"  height="600"></canvas>
+
 
 <script src="js/Food.js"></script>
 <script src="js/SnakePart.js"></script>

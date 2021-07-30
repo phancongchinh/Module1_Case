@@ -1,28 +1,36 @@
+const cellSize = 50;
+// const cellSize = 10;
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-const board_border = 'black';
-const board_background = "white";
+
+const snakeHead = new Image();
+
 const snake_col = 'lightblue';
-const snake_border = 'blue';
 const snake_init_length = 5;
 let bite = new Audio("sound/swallow.mp3")
-let gameover = new Audio("sound/gameover.mp3")
-let dx = 20;
-let dy = 0;
-let score = 0;
+let gameOver = new Audio("sound/gameover.mp3")
 
-let speedSelected = "normal";
-let timeoutValue = 1000;
+let reversing = false;
+
+let dx = cellSize;
+let dy = 0;
+
+let score = 0;
+let highScore = 0;
+
+let speedSelected = "hardcore";
+let timeoutValue = 150;
 
 let food = new Food;
 let snake = [];
 
 function initRandomX() {
-    return Math.trunc(Math.random() * canvas.clientWidth / 20) * 20;
+    return Math.trunc(Math.random() * canvas.clientWidth / cellSize) * cellSize;
 }
 
 function initRandomY() {
-    return Math.trunc(Math.random() * canvas.clientHeight / 20) * 20;
+    return Math.trunc(Math.random() * canvas.clientHeight / cellSize) * cellSize;
 }
 
 function foodOnSnake() {
@@ -39,28 +47,48 @@ function initFood() {
     }
 }
 
-function initSnake() {
-    for (let i = 0; i < snake_init_length; i++) {
-        snake[i] = new SnakePart(80 - 20 * i, 0);
+function reInitSnake() {
+    dx = cellSize;
+    dy = 0;
+    clearSnake();
+    snake = [];
+    for (let j = 0; j < snake_init_length; j++) {
+        snake[j] = new SnakePart(cellSize * (snake_init_length-j-1 ), 0);
     }
 }
 
+// function loadImage(path) {
+//     let image = new Image();
+//     let promise = new Promise((resolve, reject) => {
+//         image.onload = () => resolve(image);
+//         image.onerror = reject;
+//     });
+//     image.src = path;
+//     return promise;
+// }
+// loadImage('../Snake/img/snakeHead.png')
 
-initSnake();
-
-main();
+reInitSnake();
+main()
 
 function main() {
     function onEachMove() {
-        if (checkGameOver()) {
-            gameover.play();
-            alert("Game Over!")
-            return;
-        }
-        clearCanvas();
-        showScore();
+        reversing = false;
+        showInfo();
         food.drawFood();
+        clearCanvas();
         move();
+        if (checkGameOver()) {
+            gameOver.play();
+            if (confirm("Game Over! Try again?")) {
+                clearSnake();
+                reInitSnake();
+                score = 0;
+                drawSnake();
+            } else {
+                return;
+            }
+        }
         drawSnake();
         checkFoodIsEaten()
         main();
@@ -69,9 +97,7 @@ function main() {
 }
 
 function clearCanvas() {
-    ctx.fillStyle = board_background;
-    ctx.strokestyle = board_border;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    clearSnake();
     ctx.strokeRect(0, 0, canvas.width, canvas.height);
 }
 
@@ -84,42 +110,62 @@ function move() {
 }
 
 function drawSnake() {
-    for (let i = 0; i < snake.length; i++) {
+    if (dx !== 0) {
+        switch (dx) {
+            case cellSize:
+                snakeHead.src = '../Snake/img/snakeHeadRight.png';
+                break;
+            case -cellSize:
+                snakeHead.src = '../Snake/img/snakeHeadLeft.png';
+                break;
+        }
+        ctx.drawImage(snakeHead,0,0,snakeHead.width,snakeHead.height,snake[0].x,snake[0].y+5,cellSize,cellSize-10);
+    } else {
+        switch (dy) {
+            case cellSize:
+                snakeHead.src = '../Snake/img/snakeHeadDown.png';
+                break;
+            case -cellSize:
+                snakeHead.src = '../Snake/img/snakeHeadUp.png';
+                break;
+        }
+        ctx.drawImage(snakeHead,0,0,snakeHead.width,snakeHead.height,snake[0].x+5,snake[0].y,cellSize-10,cellSize);
+    }
+    for (let i = 1; i < snake.length; i++) {
         snake[i].drawSnakePart();
     }
 }
 
-function changeDirection(evt) {
-    const goingUp = dy === -20;
-    const goingDown = dy === 20;
-    const goingRight = dx === 20;
-    const goingLeft = dx === -20;
+function clearSnake() {
+    for (let i = 0; i < snake.length; i++) {
+        snake[i].clearSnakePart();
+    }
+}
 
-    switch (evt.keyCode) {
-        case 37:
-            if (!goingRight) {
-                dx = -20;
-                dy = 0;
-            }
-            break;
-        case 39:
-            if (!goingLeft) {
-                dx = 20;
-                dy = 0;
-            }
-            break;
-        case 38:
-            if (!goingDown) {
-                dx = 0;
-                dy = -20;
-            }
-            break;
-        case 40:
-            if (!goingUp) {
-                dx = 0;
-                dy = 20;
-            }
-            break;
+function changeDirection(evt) {
+    const goingUp = dy === -cellSize;
+    const goingDown = dy === cellSize;
+    const goingRight = dx === cellSize;
+    const goingLeft = dx === -cellSize;
+
+    if (reversing) return;
+    reversing = true;
+
+    if (evt.keyCode === 37 && !goingRight) {
+        dx = -cellSize;
+        dy = 0;
+    }
+    if (evt.keyCode === 38 && !goingDown) {
+        dx = 0;
+        dy = -cellSize;
+    }
+    if (evt.keyCode === 39 && !goingLeft) {
+        dx = cellSize;
+        dy = 0;
+    }
+    if (evt.keyCode === 40 && !goingUp) {
+        dx = 0;
+        dy = cellSize;
     }
 }
 
@@ -155,9 +201,13 @@ function checkFoodIsEaten() {
     }
 }
 
-function showScore() {
+function showInfo() {
     document.getElementById("speed").innerHTML = " Press Space bar to change Speed!";
     document.getElementById("score").innerHTML = "Score: " + score;
+    if (score >= highScore) {
+        highScore = score;
+    }
+    document.getElementById("highscore").innerHTML = "Best: " + highScore;
 }
 
 function checkGameOver() {

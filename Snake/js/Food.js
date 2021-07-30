@@ -6,9 +6,8 @@ class Food {
         this.y = initRandomY();
     }
     drawFood () {
-        ctx.fillStyle = 'lightgreen';
-        ctx.strokestyle = 'darkgreen';
-        ctx.fillRect(this.x, this.y, 20, 20);
-        ctx.strokeRect(this.x, this.y, 20, 20);
+        let foodImg = new Image();
+        foodImg.src = "../Snake/img/food.png";
+        ctx.drawImage(foodImg,0,0,foodImg.width,foodImg.height,this.x+5,this.y,cellSize-10,cellSize);
     }
 }
